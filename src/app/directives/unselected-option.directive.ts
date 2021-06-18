@@ -1,11 +1,12 @@
-import { AfterContentInit, AfterViewInit, Host, Input, OnDestroy, OnInit, Optional } from '@angular/core';
+import { AfterContentInit, AfterViewChecked, AfterViewInit, Host, Input, OnDestroy, OnInit, Optional } from '@angular/core';
 import { Directive, ElementRef , HostListener} from '@angular/core';
+import { NgModel } from '@angular/forms';
 import { OptionFilterService } from '../services/option-filter.service';
-import { RowOptionDirective } from './row-option.directive';
 
 @Directive({
   // tslint:disable-next-line:directive-selector
-  selector: '[unselectedOptions]'
+  selector: '[unselectedOptions]',
+  providers: [NgModel]
 })
 export class UnselectedOptionDirective implements OnInit, OnDestroy, AfterViewInit {
 
@@ -14,12 +15,13 @@ export class UnselectedOptionDirective implements OnInit, OnDestroy, AfterViewIn
   private prevValue: string;
 
   constructor(private element: ElementRef,
+              private ngModel: NgModel,
               private filterService: OptionFilterService
               ) {
   }
 
   private getValue(): any {
-    return this.element.nativeElement.value;
+    return this.element.nativeElement.value || this.ngModel.model;
   }
   // https://stackblitz.com/edit/angular-sbpcef?file=app%2Fapp.component.html
 
@@ -28,6 +30,16 @@ export class UnselectedOptionDirective implements OnInit, OnDestroy, AfterViewIn
     this.filterService.setCleanValue(this.id, this.element.nativeElement.value, this.prevValue);
     this.prevValue = event.target.value;
     this.filterService.calculate(this.id);
+  }
+
+
+  private getDefaultValue(): string {
+    let temp = this.getValue();
+    if (!temp && this.element.nativeElement.options.length) {
+      temp = this.element.nativeElement.options[0].value;
+      this.ngModel.model = temp;
+    }
+    return temp;
   }
 
   ngOnInit(): void {
@@ -41,6 +53,11 @@ export class UnselectedOptionDirective implements OnInit, OnDestroy, AfterViewIn
     this.filterService.calculate(this.id);
   }
 
+  // ngAfterViewChecked(): void {
+  //   const temp = this.getValue();
+  //   debugger;
+  //   console.log('temp)', temp);
+  // }
   ngOnDestroy(): void {
     this.filterService.unregister(this.id, this.getValue());
     this.filterService.calculate(this.id);

@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { UnselectedOptionDirective } from './directives/unselected-option.directive';
 import { RowOptionDirective } from './directives/row-option.directive';
@@ -13,8 +13,7 @@ import { RowOptionDirective } from './directives/row-option.directive';
   ],
   imports: [
     BrowserModule,
-    FormsModule,
-    ReactiveFormsModule
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

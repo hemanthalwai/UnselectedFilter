@@ -10,6 +10,8 @@ export class OptionFilterService {
     private defaultValueDictionary = {};
     private rootElement: any = null;
     private readonly HIDE_CLASS_NAME = 'display-none';
+    private readonly DEFAULT_KEY = 'default';
+
     constructor() { }
 
     private getParsedValue(value: any): string {
@@ -63,8 +65,8 @@ export class OptionFilterService {
     }
 
     register(key: string, value: any = null) {
-        if (!this.defaultValueDictionary[key]) {
-            this.defaultValueDictionary[key] = [];
+        if (!key) {
+            key = this.DEFAULT_KEY;
         }
         if (value != null) {
             const parsedValue = this.getParsedValue(value);
@@ -114,6 +116,9 @@ export class OptionFilterService {
     }
 
     getSelectElements(key: string) {
+        if (key === this.DEFAULT_KEY) {
+            return this.rootElement.querySelectorAll(`[unselectedOptions]`);
+        }
         return this.rootElement.querySelectorAll(`[unselectedOptions='${key}']`);
     }
 
