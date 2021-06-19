@@ -13,6 +13,7 @@ export class UnselectedOptionDirective implements OnInit, OnDestroy, AfterViewIn
   @Input('unselectedOptions') id: string;
 
   private prevValue: string;
+  private readonly DEFAULT_KEY = 'default';
 
   constructor(private element: ElementRef,
               private ngModel: NgModel,
@@ -22,6 +23,10 @@ export class UnselectedOptionDirective implements OnInit, OnDestroy, AfterViewIn
 
   private getValue(): any {
     return this.element.nativeElement.value || this.ngModel.model;
+  }
+
+  private getNativeValue(): any {
+    return this.element.nativeElement.value;
   }
   // https://stackblitz.com/edit/angular-sbpcef?file=app%2Fapp.component.html
 
@@ -44,20 +49,19 @@ export class UnselectedOptionDirective implements OnInit, OnDestroy, AfterViewIn
 
   ngOnInit(): void {
     const defaultValue = this.getValue();
+    this.id = this.id || this.DEFAULT_KEY;
     this.filterService.register(this.id, defaultValue);
   }
 
   ngAfterViewInit(): void {
     this.prevValue = this.getValue();
+    if (!this.getNativeValue()) {
+      this.element.nativeElement.value = this.prevValue;
+    }
     this.filterService.setValue(this.id, this.prevValue);
     this.filterService.calculate(this.id);
   }
 
-  // ngAfterViewChecked(): void {
-  //   const temp = this.getValue();
-  //   debugger;
-  //   console.log('temp)', temp);
-  // }
   ngOnDestroy(): void {
     this.filterService.unregister(this.id, this.getValue());
     this.filterService.calculate(this.id);

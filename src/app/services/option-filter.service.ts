@@ -5,15 +5,18 @@ import { THROW_IF_NOT_FOUND } from '@angular/core/src/di/injector';
     providedIn: 'root'
 })
 export class OptionFilterService {
-    public count = 0;
+    private static readonly DEFAULT_KEY = 'default';
+
     private dictionary = {};
     private defaultValueDictionary = {};
-    private rootElement: any = null;
+    private rootElement: HTMLElement = null;
     private readonly HIDE_CLASS_NAME = 'display-none';
-    private readonly DEFAULT_KEY = 'default';
 
     constructor() { }
 
+    /*
+        **Internal Private methods**
+    */
     private getParsedValue(value: any): string {
         const parsedValue = typeof (value) === 'string' ? value : JSON.stringify(value);
         return parsedValue;
@@ -29,6 +32,28 @@ export class OptionFilterService {
 
     private getOptions(selectElement: any) {
         return selectElement.options;
+    }
+
+    private hasDefaultValue(key: string) {
+        return this.defaultValueDictionary[key] !== undefined;
+    }
+
+    private isDefaultValue(key: string, parsedValue: string) {
+        return this.defaultValueDictionary[key] === parsedValue;
+    }
+
+    private getDefaultValue(key: string): string {
+        const selectElements = this.getSelectElements(key);
+        if (selectElements.length && this.getOptions(selectElements[0]).length) {
+            const defaultOption = this.getOptions(selectElements[0])[0];
+            return this.getParsedValue(defaultOption.value);
+        }
+        return null;
+    }
+
+    private deallocate(key: string) {
+        delete this.dictionary[key];
+        delete this.defaultValueDictionary[key];
     }
 
     setCleanValue(key: string, newValue: any, oldValue: any) {
@@ -66,10 +91,10 @@ export class OptionFilterService {
 
     register(key: string, value: any = null) {
         if (!key) {
-            key = this.DEFAULT_KEY;
+            key = OptionFilterService.DEFAULT_KEY;
         }
-        if (value != null) {
-            const parsedValue = this.getParsedValue(value);
+        if (!this.hasDefaultValue(key)) {
+            const parsedValue = this.getDefaultValue(key);
             this.setDefaultValue(key, parsedValue);
         }
     }
@@ -96,14 +121,15 @@ export class OptionFilterService {
         if (selectElements == null || selectElements.length <= 1) {
             return;
         }
-        for (const selectElement of selectElements) {
+
+        for (const selectElement of selectElements as any) {
 
             const optionElements = this.getOptions(selectElement);
             for (const optionElement of optionElements) {
 
                 if (optionElement.value === selectElement.value) {
                     continue;
-                } else if (optionElement.value === this.defaultValueDictionary[key]) {
+                } else if (this.isDefaultValue(key, optionElement.value)) {
                     continue;
                 }
                 if (values.indexOf(optionElement.value) !== -1) {
@@ -115,22 +141,16 @@ export class OptionFilterService {
         }
     }
 
-    getSelectElements(key: string) {
-        if (key === this.DEFAULT_KEY) {
-            return this.rootElement.querySelectorAll(`[unselectedOptions]`);
+
+    getSelectElements(key: string): HTMLElement[] {
+        if (key === OptionFilterService.DEFAULT_KEY) {
+            return Array.from(this.rootElement.querySelectorAll(`[unselectedOptions]`));
         }
-        return this.rootElement.querySelectorAll(`[unselectedOptions='${key}']`);
+        return Array.from(this.rootElement.querySelectorAll(`[unselectedOptions='${key}']`));
     }
 
     registerRootElement(element: ElementRef) {
-        this.rootElement = element.nativeElement;
+        this.rootElement = element.nativeElement as HTMLElement;
     }
 
-    private deallocate(key: string) {
-        delete this.dictionary[key];
-        delete this.defaultValueDictionary[key];
-    }
-    log(from: string) {
-        console.log(from + 'Service instance', ++this.count);
-    }
 }

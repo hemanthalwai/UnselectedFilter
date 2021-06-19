@@ -31,7 +31,30 @@
       <!-- <option value="" disabled selected>By User</option> -->
       <!-- <option *ngFor="let user of allUsers" value="{{user.id}}"
     >{{user.first_name}} - {{user.email}}</option> -->
-      <option disabled value="undefined">Select Country</option>
+      <option disabled selected>Select Country</option>
+      <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
+      >
+    </select>
+    <span style="font-size: 20px;margin: 10px 20px;" (click)="deleteSelect(i)">X</span>
+  </ng-container>
+  </div>
+</div>
+<button (click)='addCountry(i)'>Add</button>
+<!-- SelectedFilter -->
+<!-- appRowOption selectedFilterRoot -->
+<!-- unselectedOptions selectedFilter -->
+
+<hr>
+<div appRowOption>
+  <div *ngFor="let iterator of iterations;let i = index;">
+    <ng-container *ngIf="!iterator.isDeleted">
+    <label>Preferred Country {{i + 1}}</label>&nbsp;&nbsp;&nbsp;
+
+    <select unselectedOptions="countryPreference" [(ngModel)]="selectedUsers2[i]" name="country">
+      <!-- <option value="" disabled selected>By User</option> -->
+      <!-- <option *ngFor="let user of allUsers" value="{{user.id}}"
+    >{{user.first_name}} - {{user.email}}</option> -->
+       <option disabled value="undefined">Select Country</option>
       <option *ngFor="let country of countries" [value]="country.id">{{country.name}}</option>
       >
     </select>

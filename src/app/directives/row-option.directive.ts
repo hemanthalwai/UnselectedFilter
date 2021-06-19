@@ -1,6 +1,5 @@
-import { AfterContentInit, AfterViewInit, Input, QueryList, ViewContainerRef } from '@angular/core';
+import { AfterContentInit, QueryList } from '@angular/core';
 import { Directive, ElementRef, OnInit, ViewChildren } from '@angular/core';
-import { NgModel } from '@angular/forms';
 import { OptionFilterService } from '../services/option-filter.service';
 import { UnselectedOptionDirective } from './unselected-option.directive';
 

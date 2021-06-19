@@ -22,6 +22,7 @@ export class AppComponent implements OnInit {
 
 
   selectedUsers = ['1', '2'];
+  selectedUsers2 = ['3', '4'];
   allUsers = [{
     id: 1,
     first_name: 'John',
@@ -48,6 +49,7 @@ export class AppComponent implements OnInit {
   addCountry() {
     const temp = {id: null};
     this.iterations.push(temp);
+    this.values.push('');
   }
 
   deleteSelect(index: number) {
